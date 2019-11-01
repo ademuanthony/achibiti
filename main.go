@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Decred developers
+// Copyright (c) 2018-2019 The Achibiti developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import (
 	"os"
 	"runtime"
 
+	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
 	"github.com/ademuanthony/achibiti/app"
 	"github.com/ademuanthony/achibiti/app/config"
 	"github.com/ademuanthony/achibiti/app/help"
@@ -18,10 +19,6 @@ import (
 	"github.com/ademuanthony/achibiti/web"
 	"github.com/jessevdk/go-flags"
 )
-
-// const dcrlaunchtime int64 = 1454889600
-// var opError error
-// var beginShutdown = make(chan bool)
 
 func main() {
 	// Create a context that is cancelled when a shutdown request is received
@@ -124,9 +121,7 @@ func _main(ctx context.Context) error {
 	}
 
 	// http server method
-	if cfg.HttpMode {
-		go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db)
-	}
+	go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db, accounts.NewAccountsService("go.micro.srv.accounts", nil))
 
 	// wait for shutdown signal
 	<-ctx.Done()

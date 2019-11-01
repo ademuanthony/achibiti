@@ -10,26 +10,31 @@ import (
 	"sync"
 	"text/template"
 
+	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
 	"github.com/go-chi/chi"
+	"github.com/gomodule/redigo/redis"
 )
 
 // DataQuery is and interface for database operations
 type DataQuery interface {
-	
+
 }
 
 // Server represents the application server
 type Server struct {
-	templates    map[string]*template.Template
-	lock         sync.RWMutex
-	db           DataQuery
+	templates      map[string]*template.Template
+	lock           sync.RWMutex
+	db             DataQuery
+	cache 		   redis.Conn
+	accountService accounts.AccountsService
 }
 
 // StartHTTPServer is the entry point for the http server
-func StartHTTPServer(httpHost, httpPort string, db DataQuery) {
+func StartHTTPServer(httpHost, httpPort string, db DataQuery, accountService accounts.AccountsService) {
 	server := &Server{
-		templates:    map[string]*template.Template{},
-		db:           db,
+		templates: map[string]*template.Template{},
+		db:        db,
+		cache:     initCache(),
 	}
 
 	router := chi.NewRouter()
@@ -70,4 +75,14 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	}))
+}
+
+func initCache() redis.Conn {
+	// Initialize the redis connection to a redis instance running on your local machine
+	conn, err := redis.DialURL("redis://localhost")
+	if err != nil {
+		panic(err)
+	}
+	// Assign the connection to the package level `cache` variable
+	return conn
 }

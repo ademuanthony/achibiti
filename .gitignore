@@ -1,6 +1,6 @@
 *.exe
 *.exe~
-dcrextdata
+achibiti
 dcrd
 dcrextdata.conf
 vendor
@@ -16,6 +16,4 @@ web/public/dist/js/app.bundle.js.map
 web/public/dist/js/vendors~app.bundle.js
 web/public/dist/js/vendors~app.bundle.js.map
 
-cached
-
-charts-cache.glob
+*-srv

@@ -2,54 +2,116 @@ package web
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
+	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/gofrs/uuid"
 )
 
 type key int
 
 const (
-	ctxSyncDataType key = iota
-	ctxChartType
+	ctxCurrentUser key = iota
+
+	sessionCookieName string = "session_token"
 )
 
-func syncDataType(next http.Handler) http.Handler {
+var tokenExpiryTime = 15 * time.Minute
+
+func (s *Server) requireLogin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), ctxSyncDataType,
-			chi.URLParam(r, "dataType"))
+		// We can obtain the session token from the requests cookies, which come with every request
+		c, err := r.Cookie(sessionCookieName)
+		if err != nil {
+			// If the cookie is not set, return an unauthorized status
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		sessionToken := c.Value
+
+		// We then get the name of the user from our cache, where we set the session token
+		loginData, err := s.cache.Do("GET", sessionToken)
+		if err != nil {
+			// If there is an error fetching from cache, return an internal server error status
+			http.Redirect(w, r, "/error", http.StatusSeeOther)
+			return
+		}
+		if loginData == nil {
+			// If the session token is not present in cache, return an unauthorized error
+			http.Redirect(w, r, "/error", http.StatusSeeOther)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ctxCurrentUser, loginData)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
+
 	})
 }
 
-// getSyncTypeCtx retrieves the syncDataType data from the request context.
-// If not set, the return value is an empty string.
-func getSyncDataTypeCtx(r *http.Request) string {
-	syncType, ok := r.Context().Value(ctxSyncDataType).(string)
+func currentUserCtx(r *http.Request) (*userData, error) {
+	userData, ok := r.Context().Value(ctxCurrentUser).(userData)
 	if !ok {
-		log.Trace("sync type not set")
-		return ""
+		log.Trace("current user not set")
+		return nil, errors.New("current user not set")
 	}
-	return syncType
+	return &userData, nil
 }
 
-// chartTypeCtx returns a http.HandlerFunc that embeds the value at the url
-// part {charttype} into the request context.
-func chartTypeCtx(next http.Handler) http.Handler {
+func (s *Server) refreshLoginSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), ctxChartType,
-			chi.URLParam(r, "charttype"))
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
+		c, err := r.Cookie(sessionCookieName)
+		if err != nil {
+			if err == http.ErrNoCookie {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		sessionToken := c.Value
 
-// getChartTypeCtx retrieves the ctxChart data from the request context.
-// If not set, the return value is an empty string.
-func getChartTypeCtx(r *http.Request) string {
-	chartType, ok := r.Context().Value(ctxChartType).(string)
-	if !ok {
-		log.Trace("chart type not set")
-		return ""
-	}
-	return chartType
+		response, err := s.cache.Do("GET", sessionToken)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if response == nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		// (END) The code uptil this point is the same as the first part of the `Welcome` route
+
+		// Now, create a new session token for the current user
+		newSessionToken, err := uuid.NewV4()
+		if err != nil {
+			log.Trace(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err = s.cache.Do("SETEX", newSessionToken.String(), tokenExpiryTime, fmt.Sprintf("%s",response))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// Delete the older session token
+		_, err = s.cache.Do("DEL", sessionToken)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// Set the new token as the users `session_token` cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:    sessionCookieName,
+			Value:   newSessionToken.String(),
+			Expires: time.Now().Add(tokenExpiryTime),
+		})
+
+		next.ServeHTTP(w, r)
+	})
 }

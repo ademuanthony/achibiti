@@ -12,15 +12,15 @@ import (
 )
 
 const (
-	DefaultConfigFilename      = "dcrextdata.conf"
-	defaultLogFilename         = "dcrextdata.log"
+	DefaultConfigFilename      = "achibiti.conf"
+	defaultLogFilename         = "achibiti.log"
 	defaultChartsCacheDump	   = "charts-cache.glob"
-	Hint                       = `Run dcrextdata < --http > to start http server or dcrextdata < --help > for help.`
+	Hint                       = `Run achibiti < --http > to start http server or achibiti < --help > for help.`
 	defaultDbHost              = "localhost"
 	defaultDbPort              = "5432"
-	defaultDbUser              = "postgres"
-	defaultDbPass              = "dbpass"
-	defaultDbName              = "dcrextdata"
+	defaultDbUser              = "tony"
+	defaultDbPass              = "ojima123"
+	defaultDbName              = "achibit"
 	defaultLogLevel            = "debug"
 	defaultHttpHost            = "127.0.0.1"
 	defaultHttpPort            = "7770"

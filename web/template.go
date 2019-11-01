@@ -13,12 +13,7 @@ func (s *Server) loadTemplates() {
 	tpls := map[string]string{
 		"error.html":       "web/views/error.html",
 		"home.html":        "web/views/home.html",
-		"exchange.html":    "web/views/exchange.html",
-		"vsp.html":         "web/views/vsp.html",
-		"pow.html":         "web/views/pow.html",
-		"mempool.html":     "web/views/mempool.html",
-		"propagation.html": "web/views/propagation.html",
-		"community.html":   "web/views/community.html",
+		"login.html":        "web/views/login.html",
 	}
 
 	for i, v := range tpls {

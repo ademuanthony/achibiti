@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
-	github.com/ademuanthony/achibiti/utils v0.0.0-00010101000000-000000000000
+	github.com/ademuanthony/achibiti/utils v0.0.0-20191101111714-6276f3277d84
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gofrs/uuid v3.2.0+incompatible

@@ -123,6 +123,12 @@ func (a accountHandler) Login(ctx context.Context, req *accounts.LoginRequest, r
 	}
 
 	resp.Token = tokenString
+	resp.Email = user.Email
+	resp.Name = user.Name
+	resp.PhoneNumber = user.PhoneNumber
+	resp.Role = user.Role
+	resp.Username = user.Username
+
 	return nil
 }
 

@@ -7,12 +7,18 @@ import (
 	"strings"
 )
 
-func (s *Server) render(tplName string, data map[string]interface{}, res http.ResponseWriter) {
+func (s *Server) render(tplName string, data map[string]interface{}, w http.ResponseWriter, r *http.Request) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
+	if data == nil {
+		data = map[string]interface{}{}
+	}
+
+	data["currentUser"], _ = currentUserCtx(r)
+
 	if tpl, ok := s.templates[tplName]; ok {
-		err := tpl.Execute(res, data)
+		err := tpl.Execute(w, data)
 		if err == nil {
 			return
 		}
@@ -29,11 +35,11 @@ func (s *Server) render(tplName string, data map[string]interface{}, res http.Re
 	log.Errorf("Template %s is not registered", tplName)
 }
 
-func (s *Server) renderError(errorMessage string, res http.ResponseWriter) {
+func (s *Server) renderError(errorMessage string, w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"error": errorMessage,
 	}
-	s.render("error.html", data, res)
+	s.render("error.html", data, w, r)
 }
 
 func (s *Server) renderErrorJSON(errorMessage string, res http.ResponseWriter) {
