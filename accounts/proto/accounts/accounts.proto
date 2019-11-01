@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package go.micro.srv.accounts;
+
+service Accounts {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Login(LoginRequest) returns (LoginResponse) {}
+	rpc Update(UpdateRequest) returns (EmptyMessage) {}
+	rpc Disable(DisableRequest) returns (EmptyMessage) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Details(DetailsRequest) returns (DetailsResponse) {}
+	rpc PasswordResetToken(PasswordResetTokenRequest) returns (PasswordResetTokenResponse) {}
+	rpc ResetPassword(ResetPasswordRequest) returns (EmptyMessage) {}
+	rpc ChangePassword(ChangePasswordRequest) returns (EmptyMessage) {}
+	rpc AddRole(AddRoleRequest) returns (AddRoleRequest) {}
+	rpc GetRoles(EmptyMessage) returns (GetRolesResponse) {}
+	rpc ChangeRole(ChangeRoleRequest) returns (EmptyMessage) {}
+}
+
+message EmptyMessage {}
+
+message CreateRequest {
+	string username = 1;
+	string password = 2;
+	string email = 3;
+	string phoneNumber = 4;
+	string name = 5;
+	string role = 6;
+}
+
+message CreateResponse {
+	string id = 1;
+}
+
+// Login
+message LoginRequest {
+	string username = 1;
+	string password = 2;
+}
+
+message LoginResponse {
+	string token = 1;
+}
+
+// Update
+message UpdateRequest {
+	string username = 1;
+	string email = 2;
+	string phoneNumber = 3;
+	string name = 4;
+}
+
+// Disable
+message DisableRequest {
+	string username = 1;
+}
+
+// List
+message ListRequest {
+	int32 skipCount = 1;
+	int32 maxResultCount = 2;
+}
+
+message ListResponse {
+	int32 totalCount = 1;
+	repeated User users = 2;
+}
+
+message User {
+	string id = 1;
+	string username = 2;
+	string email = 3;
+	string phoneNumber = 4;
+	string name = 5;
+	string role = 6;
+}
+
+// Details
+message DetailsRequest {
+	string username = 1;
+}
+
+message DetailsResponse {
+	User user = 1;
+}
+
+// Password
+message PasswordResetTokenRequest {
+	string username = 1;
+}
+
+message PasswordResetTokenResponse {
+	User user = 1;
+	string token = 2;
+}
+
+message ResetPasswordRequest {
+	string username = 1;
+	string token = 2;
+}
+
+message ChangePasswordRequest {
+	string username = 1;
+	string currentPassword = 2;
+	string newPassword = 3;
+}
+
+// Role
+message AddRoleRequest {
+	string name = 1;
+}
+
+message AddRoleResponse {
+	string id = 1;
+}
+
+message GetRolesResponse {
+	repeated Role roles = 1;
+}
+
+message Role {
+	string id = 1;
+	string name = 2;
+}
+
+message ChangeRoleRequest {
+	string username = 1;
+	string role = 2;
+}
