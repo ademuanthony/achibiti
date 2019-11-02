@@ -1,11 +1,11 @@
-# Accounts Service
+# Hr Service
 
-This is the Accounts service
+This is the Hr service
 
 Generated with
 
 ```
-micro new github.com/ademuanthony/bitenvoy/accounts --namespace=go.micro --type=srv
+micro new github.com/ademuanthony/achibiti/hr --namespace=go.micro --type=srv
 ```
 
 ## Getting Started
@@ -16,9 +16,9 @@ micro new github.com/ademuanthony/bitenvoy/accounts --namespace=go.micro --type=
 
 ## Configuration
 
-- FQDN: go.micro.srv.accounts
+- FQDN: go.micro.srv.hr
 - Type: srv
-- Alias: accounts
+- Alias: hr
 
 ## Dependencies
 
@@ -46,7 +46,7 @@ make build
 
 Run the service
 ```
-./accounts-srv
+./hr-srv
 ```
 
 Build a docker image

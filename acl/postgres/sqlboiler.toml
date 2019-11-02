@@ -1,0 +1,7 @@
+[psql]
+    dbname = "achibiti_acl"
+    host = "localhost"
+    user = "tony"
+    pass = "ojima123"
+    sslmode = "disable"
+    whitelist=["account_user"]

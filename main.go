@@ -10,7 +10,7 @@ import (
 	"os"
 	"runtime"
 
-	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
+	acl "github.com/ademuanthony/achibiti/acl/proto/acl"
 	"github.com/ademuanthony/achibiti/app"
 	"github.com/ademuanthony/achibiti/app/config"
 	"github.com/ademuanthony/achibiti/app/help"
@@ -121,7 +121,7 @@ func _main(ctx context.Context) error {
 	}
 
 	// http server method
-	go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db, accounts.NewAccountsService("go.micro.srv.accounts", nil))
+	go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db, acl.NewAclService("go.micro.srv.acl", nil))
 
 	// wait for shutdown signal
 	<-ctx.Done()

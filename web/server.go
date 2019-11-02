@@ -10,7 +10,7 @@ import (
 	"sync"
 	"text/template"
 
-	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
+	accounts "github.com/ademuanthony/achibiti/acl/proto/acl"
 	"github.com/go-chi/chi"
 	"github.com/gomodule/redigo/redis"
 )
@@ -26,11 +26,11 @@ type Server struct {
 	lock           sync.RWMutex
 	db             DataQuery
 	cache 		   redis.Conn
-	accountService accounts.AccountsService
+	accountService accounts.AclService
 }
 
 // StartHTTPServer is the entry point for the http server
-func StartHTTPServer(httpHost, httpPort string, db DataQuery, accountService accounts.AccountsService) {
+func StartHTTPServer(httpHost, httpPort string, db DataQuery, accountService accounts.AclService) {
 	server := &Server{
 		templates: map[string]*template.Template{},
 		db:        db,

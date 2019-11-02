@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/ademuanthony/achibiti/accounts/handler"
-	"github.com/ademuanthony/achibiti/accounts/postgres"
-	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
+	hr "github.com/ademuanthony/achibiti/hr/proto/hr"
+	"os"
+
+	"github.com/ademuanthony/achibiti/hr/handler"
+	"github.com/ademuanthony/achibiti/hr/postgres"
 	"github.com/jessevdk/go-flags"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/util/log"
-	"os"
 )
 
 func main() {
@@ -29,15 +30,27 @@ func main() {
 	}()
 
 	// create tables
-	if !db.UserTableExists() {
-		if err = db.CreateUserTable(); err != nil {
+	if !db.DepartmentTableExists() {
+		if err = db.CreateDepartmentTable(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if !db.EmployeeTypeTableExists() {
+		if err = db.CreateEmployeeTypeTable(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if !db.EmployeeTableExists() {
+		if err = db.CreateEmployeeTable(); err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	// New Service
 	service := micro.NewService(
-		micro.Name("go.micro.srv.accounts"),
+		micro.Name("go.micro.srv.hr"),
 		micro.Version("latest"),
 	)
 
@@ -45,15 +58,14 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	if err := accounts.RegisterAccountsHandler(service.Server(), handler.NewAccountHandler(db)); err != nil {
-		log.Fatal(err)
-	}
+	hr.RegisterHrHandler(service.Server(), handler.NewHr(db))
 
 	// Run service
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
+
 
 const (
 	DefaultConfigFilename      = "account.conf"
@@ -115,3 +127,4 @@ func LoadConfig() (*Config, []string, error) {
 
 	return &cfg, unknownArg, nil
 }
+

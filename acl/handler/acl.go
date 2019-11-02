@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
+	acl "github.com/ademuanthony/achibiti/acl/proto/acl"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
 	"github.com/micro/go-micro/util/log"
@@ -22,13 +22,13 @@ type Claims struct {
 }
 
 type DataStore interface {
-	CreateUser(ctx context.Context, user accounts.User, hashedPassword string) error
-	FindUserByUsername(ctx context.Context, username string) (user *accounts.User, err error)
-	FindUserByEmail(ctx context.Context, email string) (user *accounts.User, err error)
-	FindUserByPhone(ctx context.Context, phoneNumber string) (user *accounts.User, err error)
+	CreateUser(ctx context.Context, user acl.User, hashedPassword string) error
+	FindUserByUsername(ctx context.Context, username string) (user *acl.User, err error)
+	FindUserByEmail(ctx context.Context, email string) (user *acl.User, err error)
+	FindUserByPhone(ctx context.Context, phoneNumber string) (user *acl.User, err error)
 	GetPasswordHash(ctx context.Context, username string) (string, error)
 	Disable(ctx context.Context, username string) error
-	GetUsers(ctx context.Context, skipCount int32, maxResultCount int32) ([]*accounts.User, int32, error)
+	GetUsers(ctx context.Context, skipCount int32, maxResultCount int32) ([]*acl.User, int32, error)
 }
 
 type accountHandler struct{
@@ -41,7 +41,7 @@ func NewAccountHandler(store DataStore) *accountHandler {
 	}
 }
 
-func (a accountHandler) Create(ctx context.Context, req *accounts.CreateRequest, resp *accounts.CreateResponse) error {
+func (a accountHandler) Create(ctx context.Context, req *acl.CreateRequest, resp *acl.CreateResponse) error {
 	if u, _ := a.store.FindUserByUsername(ctx, req.Username); u != nil {
 		return fmt.Errorf("the username, %s has been taken", req.Username)
 	}
@@ -64,7 +64,7 @@ func (a accountHandler) Create(ctx context.Context, req *accounts.CreateRequest,
 		return fmt.Errorf("error in hashinf password, %s", err.Error())
 	}
 
-	user := accounts.User{
+	user := acl.User{
 		Id:                   id.String(),
 		Username:             req.Username,
 		Email:                req.Email,
@@ -81,7 +81,7 @@ func (a accountHandler) Create(ctx context.Context, req *accounts.CreateRequest,
 	return nil
 }
 
-func (a accountHandler) Login(ctx context.Context, req *accounts.LoginRequest, resp *accounts.LoginResponse) error {
+func (a accountHandler) Login(ctx context.Context, req *acl.LoginRequest, resp *acl.LoginResponse) error {
 	user, err := a.store.FindUserByUsername(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -132,18 +132,18 @@ func (a accountHandler) Login(ctx context.Context, req *accounts.LoginRequest, r
 	return nil
 }
 
-func (a accountHandler) Update(ctx context.Context, req *accounts.UpdateRequest, resp *accounts.EmptyMessage) error {
+func (a accountHandler) Update(ctx context.Context, req *acl.UpdateRequest, resp *acl.EmptyMessage) error {
 	panic("implement me")
 }
 
-func (a accountHandler) Disable(ctx context.Context, req *accounts.DisableRequest, resp *accounts.EmptyMessage) error {
+func (a accountHandler) Disable(ctx context.Context, req *acl.DisableRequest, resp *acl.EmptyMessage) error {
 	if err := a.store.Disable(ctx, req.Username); err != nil {
 		return fmt.Errorf("error in disabling account, %s", err.Error())
 	}
 	return nil
 }
 
-func (a accountHandler) List(ctx context.Context, req *accounts.ListRequest, resp *accounts.ListResponse) error {
+func (a accountHandler) List(ctx context.Context, req *acl.ListRequest, resp *acl.ListResponse) error {
 	users, totalCount, err := a.store.GetUsers(ctx, req.SkipCount, req.MaxResultCount)
 	resp.Users = users
 	resp.TotalCount = totalCount
@@ -151,7 +151,7 @@ func (a accountHandler) List(ctx context.Context, req *accounts.ListRequest, res
 	return err
 }
 
-func (a accountHandler) Details(ctx context.Context, req *accounts.DetailsRequest, resp *accounts.DetailsResponse) error {
+func (a accountHandler) Details(ctx context.Context, req *acl.DetailsRequest, resp *acl.DetailsResponse) error {
 	user, err := a.store.FindUserByUsername(ctx, req.Username)
 	if err != nil {
 		return err
@@ -161,27 +161,27 @@ func (a accountHandler) Details(ctx context.Context, req *accounts.DetailsReques
 	return nil
 }
 
-func (a accountHandler) PasswordResetToken(ctx context.Context, req *accounts.PasswordResetTokenRequest, resp *accounts.PasswordResetTokenResponse) error {
+func (a accountHandler) PasswordResetToken(ctx context.Context, req *acl.PasswordResetTokenRequest, resp *acl.PasswordResetTokenResponse) error {
 	panic("implement me")
 }
 
-func (a accountHandler) ResetPassword(ctx context.Context, req *accounts.ResetPasswordRequest, resp *accounts.EmptyMessage) error {
+func (a accountHandler) ResetPassword(ctx context.Context, req *acl.ResetPasswordRequest, resp *acl.EmptyMessage) error {
 	panic("implement me")
 }
 
-func (a accountHandler) ChangePassword(ctx context.Context, req *accounts.ChangePasswordRequest, resp *accounts.EmptyMessage) error {
+func (a accountHandler) ChangePassword(ctx context.Context, req *acl.ChangePasswordRequest, resp *acl.EmptyMessage) error {
 	panic("implement me")
 }
 
-func (a accountHandler) AddRole(ctx context.Context, req *accounts.AddRoleRequest, resp *accounts.AddRoleRequest) error {
+func (a accountHandler) AddRole(ctx context.Context, req *acl.AddRoleRequest, resp *acl.AddRoleRequest) error {
 	panic("implement me")
 }
 
-func (a accountHandler) GetRoles(ctx context.Context, req *accounts.EmptyMessage, resp *accounts.GetRolesResponse) error {
+func (a accountHandler) GetRoles(ctx context.Context, req *acl.EmptyMessage, resp *acl.GetRolesResponse) error {
 	panic("implement me")
 }
 
-func (a accountHandler) ChangeRole(ctx context.Context, req *accounts.ChangeRoleRequest, resp *accounts.EmptyMessage) error {
+func (a accountHandler) ChangeRole(ctx context.Context, req *acl.ChangeRoleRequest, resp *acl.EmptyMessage) error {
 	panic("implement me")
 }
 

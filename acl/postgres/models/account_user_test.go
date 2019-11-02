@@ -26,7 +26,7 @@ func testAccountUsers(t *testing.T) {
 
 	query := AccountUsers()
 
-	if query.Query == nil {
+	if Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }

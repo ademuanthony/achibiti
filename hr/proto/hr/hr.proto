@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package go.micro.srv.hr;
+
+service Hr {
+	// Department
+	rpc CreateDepartment(CreateDepartmentRequest) returns (CreateDepartmentResponse) {}
+	rpc Departments(DepartmentsRequest) returns (DepartmentsResponse) {}
+	rpc UpdateDepartment(UpdateDepartmentRequest) returns (EmptyMessage) {}
+	rpc DeleteDepartment(DeleteDepartmentRequest) returns (EmptyMessage) {}
+
+	// Employee Type
+	rpc CreateEmployeeType(CreateEmployeeTypeRequest) returns (CreateEmployeeTypeResponse) {}
+	rpc EmployeeTypes(EmployeeTypesRequest) returns (EmployeeTypesResponse) {}
+	rpc UpdateEmployeeType(UpdateEmployeeTypeRequest) returns (EmptyMessage) {}
+	rpc DeleteEmployeeType(DeleteEmployeeTypeRequest) returns (EmptyMessage) {}
+
+	//Employee
+	rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse) {}
+	rpc Employees(EmployeesRequest) returns (EmployeesResponse) {}
+	rpc UpdateEmployee(UpdateEmployeeRequest) returns (EmptyMessage) {}
+	rpc DeleteEmployee(DeleteEmployeeRequest) returns (EmptyMessage) {}
+}
+
+message EmptyMessage {
+}
+
+// Departments
+message CreateDepartmentRequest {
+	string name = 1;
+}
+
+message CreateDepartmentResponse {
+	string id = 1;
+}
+
+message DepartmentsRequest {
+	int32 skip_count = 1;
+	int32 max_result_count = 2;
+}
+
+message DepartmentsResponse {
+	int64 total_count = 1;
+	repeated Department departments = 2;
+}
+
+message Department {
+	string id = 1;
+	string name = 2;
+}
+
+message UpdateDepartmentRequest {
+	string id = 1;
+	string name = 2;
+}
+
+message DeleteDepartmentRequest {
+	string id = 1;
+}
+
+// Employee Type
+message CreateEmployeeTypeRequest {
+	string name = 1;
+	string department_id = 2;
+}
+
+message CreateEmployeeTypeResponse {
+	string employee_type_id = 1;
+	string department_id = 2;
+	string name = 3;
+	bool can_login = 4;
+}
+
+message EmployeeTypesRequest {
+	string department_id = 1;
+	int32 skip_count = 2;
+	int32 max_result_count = 3;
+}
+
+message EmployeeTypesResponse {
+	int64 total_count = 1;
+	repeated EmployeeType employee_types = 2;
+}
+
+message EmployeeType {
+	string id = 1;
+	string name = 2;
+	string department = 3;
+	string department_id = 4;
+	bool can_login = 5;
+}
+
+message UpdateEmployeeTypeRequest {
+	string id = 1;
+	string name = 2;
+	string department_id = 3;
+	bool can_login = 4;
+}
+
+message DeleteEmployeeTypeRequest {
+	string id = 1;
+}
+
+// Employee
+message CreateEmployeeRequest {
+	string name = 1;
+	string department_id = 2;
+	string employee_type_id = 3;
+	string username = 4;
+	string email = 5;
+	string phone_number = 6;
+}
+
+message CreateEmployeeResponse {
+	string employee_id = 1;
+}
+
+message EmployeesRequest {
+	string department_id = 1;
+	string employee_type_id = 2;
+	int32 skip_count = 3;
+}
+
+message EmployeesResponse {
+	int64 total_count = 1;
+	repeated Employee employees = 2;
+}
+
+message Employee {
+	string id = 1;
+	string name = 2;
+	string department_id = 3;
+	string employee_type_id = 4;
+	string department = 5;
+	string employee_type = 6;
+	string username = 7;
+	string email = 8;
+	string phone_number = 9;
+}
+
+message UpdateEmployeeRequest {
+	string id = 1;
+	string name = 2;
+	string department_id = 3;
+	string employee_type_id = 4;
+	string username = 5;
+	string email = 6;
+	string phone_number = 7;
+}
+
+message DeleteEmployeeRequest {
+	string employee_id = 1;
+}
+
