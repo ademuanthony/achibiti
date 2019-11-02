@@ -30,6 +30,15 @@ func main() {
 		}
 	}()
 
+	if cfg.Reset {
+		log.Info("Dropping all database table")
+		if err = db.DropAllTables(); err != nil {
+			log.Error(err)
+		}
+
+		return
+	}
+
 	// create tables
 	if !db.DepartmentTableExists() {
 		if err = db.CreateDepartmentTable(); err != nil {
@@ -97,6 +106,7 @@ func defaultConfig() Config {
 type Config struct {
 	DebugLevel string `short:"d" long:"debuglevel" description:"Logging level {trace, debug, info, warn, error, critical}"`
 	Quiet      bool   `short:"q" long:"quiet" description:"Easy way to set debuglevel to error"`
+	Reset      bool   `short:"r" long:"reset" description:"Reset the database"`
 
 	// Postgresql Configuration
 	DBHost string `long:"dbhost" description:"Database host"`

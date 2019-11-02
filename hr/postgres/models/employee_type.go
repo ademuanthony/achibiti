@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -24,9 +23,10 @@ import (
 
 // EmployeeType is an object representing the database table.
 type EmployeeType struct {
-	ID           string      `boil:"id" json:"id" toml:"id" yaml:"id"`
-	DepartmentID string      `boil:"department_id" json:"department_id" toml:"department_id" yaml:"department_id"`
-	Name         null.String `boil:"name" json:"name,omitempty" toml:"name" yaml:"name,omitempty"`
+	ID           string `boil:"id" json:"id" toml:"id" yaml:"id"`
+	DepartmentID string `boil:"department_id" json:"department_id" toml:"department_id" yaml:"department_id"`
+	Name         string `boil:"name" json:"name" toml:"name" yaml:"name"`
+	CanLogin     bool   `boil:"can_login" json:"can_login" toml:"can_login" yaml:"can_login"`
 
 	R *employeeTypeR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L employeeTypeL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -36,45 +36,35 @@ var EmployeeTypeColumns = struct {
 	ID           string
 	DepartmentID string
 	Name         string
+	CanLogin     string
 }{
 	ID:           "id",
 	DepartmentID: "department_id",
 	Name:         "name",
+	CanLogin:     "can_login",
 }
 
 // Generated where
 
-type whereHelpernull_String struct{ field string }
+type whereHelperbool struct{ field string }
 
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
 var EmployeeTypeWhere = struct {
 	ID           whereHelperstring
 	DepartmentID whereHelperstring
-	Name         whereHelpernull_String
+	Name         whereHelperstring
+	CanLogin     whereHelperbool
 }{
 	ID:           whereHelperstring{field: "\"employee_type\".\"id\""},
 	DepartmentID: whereHelperstring{field: "\"employee_type\".\"department_id\""},
-	Name:         whereHelpernull_String{field: "\"employee_type\".\"name\""},
+	Name:         whereHelperstring{field: "\"employee_type\".\"name\""},
+	CanLogin:     whereHelperbool{field: "\"employee_type\".\"can_login\""},
 }
 
 // EmployeeTypeRels is where relationship names are stored.
@@ -101,8 +91,8 @@ func (*employeeTypeR) NewStruct() *employeeTypeR {
 type employeeTypeL struct{}
 
 var (
-	employeeTypeAllColumns            = []string{"id", "department_id", "name"}
-	employeeTypeColumnsWithoutDefault = []string{"id", "department_id", "name"}
+	employeeTypeAllColumns            = []string{"id", "department_id", "name", "can_login"}
+	employeeTypeColumnsWithoutDefault = []string{"id", "department_id", "name", "can_login"}
 	employeeTypeColumnsWithDefault    = []string{}
 	employeeTypePrimaryKeyColumns     = []string{"id"}
 )

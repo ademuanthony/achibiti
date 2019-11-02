@@ -26,9 +26,9 @@ type DataSource interface {
 	UpdateDepartment(ctx context.Context, department go_micro_srv_hr.Department) error
 	DeleteDepartment(ctx context.Context, id string) error
 	CreateEmployeeType(ctx context.Context, employeeType go_micro_srv_hr.EmployeeType) error
-	EmployeeTypes(ctx context.Context, skipCount int32, maxResultCount int32) ([]*go_micro_srv_hr.EmployeeType, int64, error)
+	EmployeeTypes(ctx context.Context, departmentId string, skipCount int32, maxResultCount int32) ([]*go_micro_srv_hr.EmployeeType, int64, error)
 	DeleteEmployeeType(ctx context.Context, id string) error
-	EmployeeType(ctx context.Context, id string) (go_micro_srv_hr.EmployeeType, error)
+	EmployeeType(ctx context.Context, id string) (*go_micro_srv_hr.EmployeeType, error)
 	CreateEmployee(ctx context.Context, employee go_micro_srv_hr.Employee) error
 	Employees(ctx context.Context, departmentId string, employeeTypeId string, skipCount int32,
 		resultCount int32) ([]*go_micro_srv_hr.Employee, int64, error)
@@ -103,7 +103,7 @@ func (h hr) CreateEmployeeType(ctx context.Context, req *go_micro_srv_hr.CreateE
 }
 
 func (h hr) EmployeeTypes(ctx context.Context, req *go_micro_srv_hr.EmployeeTypesRequest, resp *go_micro_srv_hr.EmployeeTypesResponse) error {
-	employeeTypes, totalCount, err := h.dataSource.EmployeeTypes(ctx, req.SkipCount, req.MaxResultCount)
+	employeeTypes, totalCount, err := h.dataSource.EmployeeTypes(ctx, req.GetDepartmentId(), req.SkipCount, req.MaxResultCount)
 	if err != nil {
 		return err
 	}

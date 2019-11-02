@@ -14,7 +14,10 @@ const (
 		password_hash VARCHAR(265) NOT NULL,
 		email VARCHAR(265) NOT NULL,
 		phone_number VARCHAR(265) NOT NULL,
-		role VARCHAR(265) NOT NULL);`
+		role VARCHAR(265) NOT NULL,
+		UNIQUE(username),
+		UNIQUE(email),
+		UNIQUE(phonr_number));`
 )
 
 func (pg *PgDb) CreateUserTable() error {

@@ -689,7 +689,7 @@ func testEmployeeTypesSelect(t *testing.T) {
 }
 
 var (
-	employeeTypeDBTypes = map[string]string{`ID`: `character varying`, `DepartmentID`: `character varying`, `Name`: `character varying`}
+	employeeTypeDBTypes = map[string]string{`ID`: `character varying`, `DepartmentID`: `character varying`, `Name`: `character varying`, `CanLogin`: `boolean`}
 	_                   = bytes.MinRead
 )
 

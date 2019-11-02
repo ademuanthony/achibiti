@@ -9,14 +9,17 @@ import (
 const (
 	createDepartmentTable = `CREATE TABLE IF NOT EXISTS department (
 			id VARCHAR(64) NOT NULL PRIMARY KEY,
-			name VARCHAR(265) NOT NULL
+			name VARCHAR(265) NOT NULL,
+			UNIQUE(name)
 		);`
 
 	createEmployeeTypeTable = `CREATE TABLE IF NOT EXISTS employee_type (
 			id VARCHAR(64) NOT NULL PRIMARY KEY,
 			department_id VARCHAR(64) NOT NULL,
-			name VARCHAR(256),
-			FOREIGN KEY (department_id) REFERENCES department (id)
+			name VARCHAR(256) NOT NULL,
+			can_login BOOLEAN NOT NULL,
+			FOREIGN KEY (department_id) REFERENCES department (id),
+			UNIQUE(name)
 		);`
 
 	createEmployeeTable = `CREATE TABLE IF NOT EXISTS employee (
@@ -28,7 +31,10 @@ const (
 			email VARCHAR(64) NOT NULL,
 			phone_number VARCHAR(64) NOT NULL,
 			FOREIGN KEY (department_id) REFERENCES department (id),
-			FOREIGN KEY (employee_type_id) REFERENCES employee_type (id)
+			FOREIGN KEY (employee_type_id) REFERENCES employee_type (id),
+			UNIQUE(username),
+			UNIQUE(email),
+			UNIQUE(phone_number)
 		);`
 )
 
