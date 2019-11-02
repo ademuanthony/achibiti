@@ -62,13 +62,11 @@ message DeleteDepartmentRequest {
 message CreateEmployeeTypeRequest {
 	string name = 1;
 	string department_id = 2;
+	bool can_login = 3;
 }
 
 message CreateEmployeeTypeResponse {
 	string employee_type_id = 1;
-	string department_id = 2;
-	string name = 3;
-	bool can_login = 4;
 }
 
 message EmployeeTypesRequest {
@@ -107,8 +105,9 @@ message CreateEmployeeRequest {
 	string department_id = 2;
 	string employee_type_id = 3;
 	string username = 4;
-	string email = 5;
-	string phone_number = 6;
+	string password = 5;
+	string email = 6;
+	string phone_number = 7;
 }
 
 message CreateEmployeeResponse {
@@ -119,6 +118,7 @@ message EmployeesRequest {
 	string department_id = 1;
 	string employee_type_id = 2;
 	int32 skip_count = 3;
+	int32 max_result_count = 4;
 }
 
 message EmployeesResponse {

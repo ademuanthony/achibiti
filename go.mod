@@ -3,8 +3,7 @@ module github.com/ademuanthony/achibiti
 go 1.13
 
 require (
-	github.com/ademuanthony/achibiti/accounts v0.0.0-20191101145116-c955652b8ea9
-	github.com/ademuanthony/achibiti/acl v0.0.0-20191101145116-c955652b8ea9
+	github.com/ademuanthony/achibiti/acl v0.0.0-00010101000000-000000000000
 	github.com/ademuanthony/achibiti/utils v0.0.0-20191101145116-c955652b8ea9
 	github.com/decred/slog v1.0.0
 	github.com/go-chi/chi v4.0.2+incompatible

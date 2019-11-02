@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	accounts "github.com/ademuanthony/achibiti/accounts/proto/accounts"
+	acl "github.com/ademuanthony/achibiti/acl/proto/acl"
 	"github.com/gofrs/uuid"
 )
 
@@ -44,7 +44,7 @@ func (s *Server) apiLogin(w http.ResponseWriter, r *http.Request)  {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	loginResp, err := s.accountService.Login(r.Context(), &accounts.LoginRequest{
+	loginResp, err := s.accountService.Login(r.Context(), &acl.LoginRequest{
 		Username:             username,
 		Password:             password,
 	})

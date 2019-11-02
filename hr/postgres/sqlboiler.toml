@@ -1,5 +1,5 @@
 [psql]
-    dbname = "achibit_hr"
+    dbname = "achibiti_hr"
     host = "localhost"
     user = "tony"
     pass = "ojima123"

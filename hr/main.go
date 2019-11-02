@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	hr "github.com/ademuanthony/achibiti/hr/proto/hr"
 	"os"
 
+	acl "github.com/ademuanthony/achibiti/acl/proto/acl"
 	"github.com/ademuanthony/achibiti/hr/handler"
 	"github.com/ademuanthony/achibiti/hr/postgres"
+	hr "github.com/ademuanthony/achibiti/hr/proto/hr"
 	"github.com/jessevdk/go-flags"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/util/log"
@@ -58,7 +59,9 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	hr.RegisterHrHandler(service.Server(), handler.NewHr(db))
+	if err = hr.RegisterHrHandler(service.Server(), handler.NewHr(db, acl.NewAclService("go.micro.acl", nil))); err != nil {
+		log.Fatal(err)
+	}
 
 	// Run service
 	if err := service.Run(); err != nil {
@@ -68,8 +71,8 @@ func main() {
 
 
 const (
-	DefaultConfigFilename      = "account.conf"
-	Hint                       = `Run dcrextdata < --http > to start http server or dcrextdata < --help > for help.`
+	DefaultConfigFilename      = "hr.conf"
+	Hint                       = `Run hr-srv < --http > to start http server or dcrextdata < --help > for help.`
 	defaultDbHost              = "localhost"
 	defaultDbPort              = "5432"
 	defaultDbUser              = "postgres"

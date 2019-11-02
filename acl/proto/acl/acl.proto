@@ -3,23 +3,24 @@ syntax = "proto3";
 package go.micro.srv.acl;
 
 service Acl {
-	rpc Create(CreateRequest) returns (CreateResponse) {}
-	rpc Login(LoginRequest) returns (LoginResponse) {}
-	rpc Update(UpdateRequest) returns (EmptyMessage) {}
-	rpc Disable(DisableRequest) returns (EmptyMessage) {}
-	rpc List(ListRequest) returns (ListResponse) {}
-	rpc Details(DetailsRequest) returns (DetailsResponse) {}
-	rpc PasswordResetToken(PasswordResetTokenRequest) returns (PasswordResetTokenResponse) {}
-	rpc ResetPassword(ResetPasswordRequest) returns (EmptyMessage) {}
-	rpc ChangePassword(ChangePasswordRequest) returns (EmptyMessage) {}
-	rpc AddRole(AddRoleRequest) returns (AddRoleRequest) {}
-	rpc GetRoles(EmptyMessage) returns (GetRolesResponse) {}
-	rpc ChangeRole(ChangeRoleRequest) returns (EmptyMessage) {}
+	rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {}
+	rpc Login (LoginRequest) returns (LoginResponse) {}
+	rpc UpdateUser (UpdateUserRequest) returns (EmptyMessage) {}
+	rpc DeleteUser(DeleteUserRequest) returns (EmptyMessage) {}
+	rpc DisableUser (DisableUserRequest) returns (EmptyMessage) {}
+	rpc Users (UsersRequest) returns (UsersResponse) {}
+	rpc UserDetails (UserDetailsRequest) returns (UserDetailsResponse) {}
+	rpc PasswordResetToken (PasswordResetTokenRequest) returns (PasswordResetTokenResponse) {}
+	rpc ResetPassword (ResetPasswordRequest) returns (EmptyMessage) {}
+	rpc ChangePassword (ChangePasswordRequest) returns (EmptyMessage) {}
+	rpc AddRole (AddRoleRequest) returns (AddRoleRequest) {}
+	rpc GetRoles (EmptyMessage) returns (GetRolesResponse) {}
+	rpc ChangeRole (ChangeRoleRequest) returns (EmptyMessage) {}
 }
 
 message EmptyMessage {}
 
-message CreateRequest {
+message CreateUserRequest {
 	string username = 1;
 	string password = 2;
 	string email = 3;
@@ -28,7 +29,7 @@ message CreateRequest {
 	string role = 6;
 }
 
-message CreateResponse {
+message CreateUserResponse {
 	string id = 1;
 }
 
@@ -48,25 +49,30 @@ message LoginResponse {
 }
 
 // Update
-message UpdateRequest {
+message UpdateUserRequest {
 	string username = 1;
 	string email = 2;
 	string phoneNumber = 3;
 	string name = 4;
 }
 
+// Delete User
+message DeleteUserRequest {
+	string username = 1;
+}
+
 // Disable
-message DisableRequest {
+message DisableUserRequest {
 	string username = 1;
 }
 
 // List
-message ListRequest {
+message UsersRequest {
 	int32 skipCount = 1;
 	int32 maxResultCount = 2;
 }
 
-message ListResponse {
+message UsersResponse {
 	int32 totalCount = 1;
 	repeated User users = 2;
 }
@@ -81,11 +87,11 @@ message User {
 }
 
 // Details
-message DetailsRequest {
+message UserDetailsRequest {
 	string username = 1;
 }
 
-message DetailsResponse {
+message UserDetailsResponse {
 	User user = 1;
 }
 

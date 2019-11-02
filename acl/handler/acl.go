@@ -41,7 +41,7 @@ func NewAccountHandler(store DataStore) *accountHandler {
 	}
 }
 
-func (a accountHandler) Create(ctx context.Context, req *acl.CreateRequest, resp *acl.CreateResponse) error {
+func (a accountHandler) CreateUser(ctx context.Context, req *acl.CreateUserRequest, resp *acl.CreateUserResponse) error {
 	if u, _ := a.store.FindUserByUsername(ctx, req.Username); u != nil {
 		return fmt.Errorf("the username, %s has been taken", req.Username)
 	}
@@ -132,18 +132,18 @@ func (a accountHandler) Login(ctx context.Context, req *acl.LoginRequest, resp *
 	return nil
 }
 
-func (a accountHandler) Update(ctx context.Context, req *acl.UpdateRequest, resp *acl.EmptyMessage) error {
+func (a accountHandler) UpdateUser(ctx context.Context, req *acl.UpdateUserRequest, resp *acl.EmptyMessage) error {
 	panic("implement me")
 }
 
-func (a accountHandler) Disable(ctx context.Context, req *acl.DisableRequest, resp *acl.EmptyMessage) error {
+func (a accountHandler) DisableUser(ctx context.Context, req *acl.DisableUserRequest, resp *acl.EmptyMessage) error {
 	if err := a.store.Disable(ctx, req.Username); err != nil {
 		return fmt.Errorf("error in disabling account, %s", err.Error())
 	}
 	return nil
 }
 
-func (a accountHandler) List(ctx context.Context, req *acl.ListRequest, resp *acl.ListResponse) error {
+func (a accountHandler) Users(ctx context.Context, req *acl.UsersRequest, resp *acl.UsersResponse) error {
 	users, totalCount, err := a.store.GetUsers(ctx, req.SkipCount, req.MaxResultCount)
 	resp.Users = users
 	resp.TotalCount = totalCount
@@ -151,7 +151,7 @@ func (a accountHandler) List(ctx context.Context, req *acl.ListRequest, resp *ac
 	return err
 }
 
-func (a accountHandler) Details(ctx context.Context, req *acl.DetailsRequest, resp *acl.DetailsResponse) error {
+func (a accountHandler) UserDetails(ctx context.Context, req *acl.UserDetailsRequest, resp *acl.UserDetailsResponse) error {
 	user, err := a.store.FindUserByUsername(ctx, req.Username)
 	if err != nil {
 		return err

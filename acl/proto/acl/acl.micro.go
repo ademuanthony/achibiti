@@ -34,12 +34,13 @@ var _ server.Option
 // Client API for Acl service
 
 type AclService interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*CreateUserResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error)
-	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*EmptyMessage, error)
-	Disable(ctx context.Context, in *DisableRequest, opts ...client.CallOption) (*EmptyMessage, error)
-	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
-	Details(ctx context.Context, in *DetailsRequest, opts ...client.CallOption) (*DetailsResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
+	DisableUser(ctx context.Context, in *DisableUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
+	Users(ctx context.Context, in *UsersRequest, opts ...client.CallOption) (*UsersResponse, error)
+	UserDetails(ctx context.Context, in *UserDetailsRequest, opts ...client.CallOption) (*UserDetailsResponse, error)
 	PasswordResetToken(ctx context.Context, in *PasswordResetTokenRequest, opts ...client.CallOption) (*PasswordResetTokenResponse, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...client.CallOption) (*EmptyMessage, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...client.CallOption) (*EmptyMessage, error)
@@ -66,9 +67,9 @@ func NewAclService(name string, c client.Client) AclService {
 	}
 }
 
-func (c *aclService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
-	req := c.c.NewRequest(c.name, "Acl.Create", in)
-	out := new(CreateResponse)
+func (c *aclService) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*CreateUserResponse, error) {
+	req := c.c.NewRequest(c.name, "Acl.CreateUser", in)
+	out := new(CreateUserResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -86,8 +87,8 @@ func (c *aclService) Login(ctx context.Context, in *LoginRequest, opts ...client
 	return out, nil
 }
 
-func (c *aclService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*EmptyMessage, error) {
-	req := c.c.NewRequest(c.name, "Acl.Update", in)
+func (c *aclService) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...client.CallOption) (*EmptyMessage, error) {
+	req := c.c.NewRequest(c.name, "Acl.UpdateUser", in)
 	out := new(EmptyMessage)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -96,8 +97,8 @@ func (c *aclService) Update(ctx context.Context, in *UpdateRequest, opts ...clie
 	return out, nil
 }
 
-func (c *aclService) Disable(ctx context.Context, in *DisableRequest, opts ...client.CallOption) (*EmptyMessage, error) {
-	req := c.c.NewRequest(c.name, "Acl.Disable", in)
+func (c *aclService) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*EmptyMessage, error) {
+	req := c.c.NewRequest(c.name, "Acl.DeleteUser", in)
 	out := new(EmptyMessage)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -106,9 +107,9 @@ func (c *aclService) Disable(ctx context.Context, in *DisableRequest, opts ...cl
 	return out, nil
 }
 
-func (c *aclService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
-	req := c.c.NewRequest(c.name, "Acl.List", in)
-	out := new(ListResponse)
+func (c *aclService) DisableUser(ctx context.Context, in *DisableUserRequest, opts ...client.CallOption) (*EmptyMessage, error) {
+	req := c.c.NewRequest(c.name, "Acl.DisableUser", in)
+	out := new(EmptyMessage)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,9 +117,19 @@ func (c *aclService) List(ctx context.Context, in *ListRequest, opts ...client.C
 	return out, nil
 }
 
-func (c *aclService) Details(ctx context.Context, in *DetailsRequest, opts ...client.CallOption) (*DetailsResponse, error) {
-	req := c.c.NewRequest(c.name, "Acl.Details", in)
-	out := new(DetailsResponse)
+func (c *aclService) Users(ctx context.Context, in *UsersRequest, opts ...client.CallOption) (*UsersResponse, error) {
+	req := c.c.NewRequest(c.name, "Acl.Users", in)
+	out := new(UsersResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aclService) UserDetails(ctx context.Context, in *UserDetailsRequest, opts ...client.CallOption) (*UserDetailsResponse, error) {
+	req := c.c.NewRequest(c.name, "Acl.UserDetails", in)
+	out := new(UserDetailsResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -189,12 +200,13 @@ func (c *aclService) ChangeRole(ctx context.Context, in *ChangeRoleRequest, opts
 // Server API for Acl service
 
 type AclHandler interface {
-	Create(context.Context, *CreateRequest, *CreateResponse) error
+	CreateUser(context.Context, *CreateUserRequest, *CreateUserResponse) error
 	Login(context.Context, *LoginRequest, *LoginResponse) error
-	Update(context.Context, *UpdateRequest, *EmptyMessage) error
-	Disable(context.Context, *DisableRequest, *EmptyMessage) error
-	List(context.Context, *ListRequest, *ListResponse) error
-	Details(context.Context, *DetailsRequest, *DetailsResponse) error
+	UpdateUser(context.Context, *UpdateUserRequest, *EmptyMessage) error
+	DeleteUser(context.Context, *DeleteUserRequest, *EmptyMessage) error
+	DisableUser(context.Context, *DisableUserRequest, *EmptyMessage) error
+	Users(context.Context, *UsersRequest, *UsersResponse) error
+	UserDetails(context.Context, *UserDetailsRequest, *UserDetailsResponse) error
 	PasswordResetToken(context.Context, *PasswordResetTokenRequest, *PasswordResetTokenResponse) error
 	ResetPassword(context.Context, *ResetPasswordRequest, *EmptyMessage) error
 	ChangePassword(context.Context, *ChangePasswordRequest, *EmptyMessage) error
@@ -205,12 +217,13 @@ type AclHandler interface {
 
 func RegisterAclHandler(s server.Server, hdlr AclHandler, opts ...server.HandlerOption) error {
 	type acl interface {
-		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		CreateUser(ctx context.Context, in *CreateUserRequest, out *CreateUserResponse) error
 		Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error
-		Update(ctx context.Context, in *UpdateRequest, out *EmptyMessage) error
-		Disable(ctx context.Context, in *DisableRequest, out *EmptyMessage) error
-		List(ctx context.Context, in *ListRequest, out *ListResponse) error
-		Details(ctx context.Context, in *DetailsRequest, out *DetailsResponse) error
+		UpdateUser(ctx context.Context, in *UpdateUserRequest, out *EmptyMessage) error
+		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *EmptyMessage) error
+		DisableUser(ctx context.Context, in *DisableUserRequest, out *EmptyMessage) error
+		Users(ctx context.Context, in *UsersRequest, out *UsersResponse) error
+		UserDetails(ctx context.Context, in *UserDetailsRequest, out *UserDetailsResponse) error
 		PasswordResetToken(ctx context.Context, in *PasswordResetTokenRequest, out *PasswordResetTokenResponse) error
 		ResetPassword(ctx context.Context, in *ResetPasswordRequest, out *EmptyMessage) error
 		ChangePassword(ctx context.Context, in *ChangePasswordRequest, out *EmptyMessage) error
@@ -229,28 +242,32 @@ type aclHandler struct {
 	AclHandler
 }
 
-func (h *aclHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
-	return h.AclHandler.Create(ctx, in, out)
+func (h *aclHandler) CreateUser(ctx context.Context, in *CreateUserRequest, out *CreateUserResponse) error {
+	return h.AclHandler.CreateUser(ctx, in, out)
 }
 
 func (h *aclHandler) Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error {
 	return h.AclHandler.Login(ctx, in, out)
 }
 
-func (h *aclHandler) Update(ctx context.Context, in *UpdateRequest, out *EmptyMessage) error {
-	return h.AclHandler.Update(ctx, in, out)
+func (h *aclHandler) UpdateUser(ctx context.Context, in *UpdateUserRequest, out *EmptyMessage) error {
+	return h.AclHandler.UpdateUser(ctx, in, out)
 }
 
-func (h *aclHandler) Disable(ctx context.Context, in *DisableRequest, out *EmptyMessage) error {
-	return h.AclHandler.Disable(ctx, in, out)
+func (h *aclHandler) DeleteUser(ctx context.Context, in *DeleteUserRequest, out *EmptyMessage) error {
+	return h.AclHandler.DeleteUser(ctx, in, out)
 }
 
-func (h *aclHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
-	return h.AclHandler.List(ctx, in, out)
+func (h *aclHandler) DisableUser(ctx context.Context, in *DisableUserRequest, out *EmptyMessage) error {
+	return h.AclHandler.DisableUser(ctx, in, out)
 }
 
-func (h *aclHandler) Details(ctx context.Context, in *DetailsRequest, out *DetailsResponse) error {
-	return h.AclHandler.Details(ctx, in, out)
+func (h *aclHandler) Users(ctx context.Context, in *UsersRequest, out *UsersResponse) error {
+	return h.AclHandler.Users(ctx, in, out)
+}
+
+func (h *aclHandler) UserDetails(ctx context.Context, in *UserDetailsRequest, out *UserDetailsResponse) error {
+	return h.AclHandler.UserDetails(ctx, in, out)
 }
 
 func (h *aclHandler) PasswordResetToken(ctx context.Context, in *PasswordResetTokenRequest, out *PasswordResetTokenResponse) error {
