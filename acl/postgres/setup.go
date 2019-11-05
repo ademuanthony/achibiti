@@ -17,7 +17,7 @@ const (
 		role VARCHAR(265) NOT NULL,
 		UNIQUE(username),
 		UNIQUE(email),
-		UNIQUE(phonr_number));`
+		UNIQUE(phone_number));`
 )
 
 func (pg *PgDb) CreateUserTable() error {

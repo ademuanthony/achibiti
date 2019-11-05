@@ -38,7 +38,7 @@ func main() {
 
 	// New Service
 	service := micro.NewService(
-		micro.Name("go.micro.srv.accounts"),
+		micro.Name("go.micro.srv.acl"),
 		micro.Version("latest"),
 	)
 
@@ -46,7 +46,7 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	if err := acl.RegisterAclHandler(service.Server(), handler.NewAccountHandler(db)); err != nil {
+	if err := acl.RegisterAclHandler(service.Server(), handler.NewAclHandler(db)); err != nil {
 		log.Fatal(err)
 	}
 

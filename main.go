@@ -15,6 +15,7 @@ import (
 	"github.com/ademuanthony/achibiti/app/config"
 	"github.com/ademuanthony/achibiti/app/help"
 	"github.com/ademuanthony/achibiti/app/helpers"
+	hr "github.com/ademuanthony/achibiti/hr/proto/hr"
 	"github.com/ademuanthony/achibiti/postgres"
 	"github.com/ademuanthony/achibiti/web"
 	"github.com/jessevdk/go-flags"
@@ -120,8 +121,10 @@ func _main(ctx context.Context) error {
 		return err
 	}
 
+	aclService := acl.NewAclService("go.micro.srv.acl", nil)
+	hrService := hr.NewHrService("go.micro.srv.hr", nil)
 	// http server method
-	go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db, acl.NewAclService("go.micro.srv.acl", nil))
+	go web.StartHTTPServer(cfg.HTTPHost, cfg.HTTPPort, db, aclService, hrService)
 
 	// wait for shutdown signal
 	<-ctx.Done()

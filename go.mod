@@ -5,9 +5,12 @@ go 1.13
 require (
 	github.com/ademuanthony/achibiti/acl v0.0.0-00010101000000-000000000000
 	github.com/ademuanthony/achibiti/utils v0.0.0-20191101145116-c955652b8ea9
+	github.com/davecgh/go-spew v1.1.1
 	github.com/decred/slog v1.0.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.0.2+incompatible
+	github.com/go-chi/cors v1.0.0
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang/protobuf v1.3.2
 	github.com/gomodule/redigo v2.0.0+incompatible
@@ -23,5 +26,6 @@ require (
 
 replace (
 	github.com/ademuanthony/achibiti/acl => ./acl
+	github.com/ademuanthony/achibiti/hr => ./hr
 	github.com/ademuanthony/achibiti/utils => ./utils
 )

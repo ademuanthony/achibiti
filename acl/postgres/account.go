@@ -84,6 +84,13 @@ func (pg *PgDb) Disable(ctx context.Context, username string) error {
 	panic("implement me")
 }
 
+func (pg *PgDb) DeleteUser(ctx context.Context, username string) error  {
+	//todo remove associated permissions
+	accountUser := models.AccountUser{Username:username}
+	_, err := accountUser.Delete(ctx, pg.db)
+	return err
+}
+
 func (pg *PgDb) GetUsers(ctx context.Context, skipCount int32, maxResultCount int32) ([]*acl.User, int32, error) {
 	totalCount, err := models.AccountUsers().Count(ctx, pg.db)
 	if err != nil {

@@ -36,6 +36,7 @@ var _ server.Option
 type AclService interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*CreateUserResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...client.CallOption) (*LoginResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
 	DisableUser(ctx context.Context, in *DisableUserRequest, opts ...client.CallOption) (*EmptyMessage, error)
@@ -79,6 +80,16 @@ func (c *aclService) CreateUser(ctx context.Context, in *CreateUserRequest, opts
 
 func (c *aclService) Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error) {
 	req := c.c.NewRequest(c.name, "Acl.Login", in)
+	out := new(LoginResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aclService) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...client.CallOption) (*LoginResponse, error) {
+	req := c.c.NewRequest(c.name, "Acl.RefreshToken", in)
 	out := new(LoginResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -202,6 +213,7 @@ func (c *aclService) ChangeRole(ctx context.Context, in *ChangeRoleRequest, opts
 type AclHandler interface {
 	CreateUser(context.Context, *CreateUserRequest, *CreateUserResponse) error
 	Login(context.Context, *LoginRequest, *LoginResponse) error
+	RefreshToken(context.Context, *RefreshTokenRequest, *LoginResponse) error
 	UpdateUser(context.Context, *UpdateUserRequest, *EmptyMessage) error
 	DeleteUser(context.Context, *DeleteUserRequest, *EmptyMessage) error
 	DisableUser(context.Context, *DisableUserRequest, *EmptyMessage) error
@@ -219,6 +231,7 @@ func RegisterAclHandler(s server.Server, hdlr AclHandler, opts ...server.Handler
 	type acl interface {
 		CreateUser(ctx context.Context, in *CreateUserRequest, out *CreateUserResponse) error
 		Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error
+		RefreshToken(ctx context.Context, in *RefreshTokenRequest, out *LoginResponse) error
 		UpdateUser(ctx context.Context, in *UpdateUserRequest, out *EmptyMessage) error
 		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *EmptyMessage) error
 		DisableUser(ctx context.Context, in *DisableUserRequest, out *EmptyMessage) error
@@ -248,6 +261,10 @@ func (h *aclHandler) CreateUser(ctx context.Context, in *CreateUserRequest, out 
 
 func (h *aclHandler) Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error {
 	return h.AclHandler.Login(ctx, in, out)
+}
+
+func (h *aclHandler) RefreshToken(ctx context.Context, in *RefreshTokenRequest, out *LoginResponse) error {
+	return h.AclHandler.RefreshToken(ctx, in, out)
 }
 
 func (h *aclHandler) UpdateUser(ctx context.Context, in *UpdateUserRequest, out *EmptyMessage) error {

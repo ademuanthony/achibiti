@@ -15,7 +15,7 @@ func (s *Server) render(tplName string, data map[string]interface{}, w http.Resp
 		data = map[string]interface{}{}
 	}
 
-	data["currentUser"], _ = currentUserCtx(r)
+	data["currentUser"] = currentUserCtx(r)
 
 	if tpl, ok := s.templates[tplName]; ok {
 		err := tpl.Execute(w, data)
@@ -42,22 +42,36 @@ func (s *Server) renderError(errorMessage string, w http.ResponseWriter, r *http
 	s.render("error.html", data, w, r)
 }
 
-func (s *Server) renderErrorJSON(errorMessage string, res http.ResponseWriter) {
+func (s *Server) renderErrorJSON(errorMessage string, w http.ResponseWriter) {
 	data := map[string]interface{}{
 		"error": errorMessage,
+		"success": false,
 	}
 
-	s.renderJSON(data, res)
+	s.renderJSON(data, w)
 }
 
-func (s *Server) renderJSON(data interface{}, res http.ResponseWriter) {
+func (s *Server) renderJSON(data interface{}, w http.ResponseWriter) {
+	if dataMap, ok := data.(map[string]interface{}); ok {
+		if _, found := dataMap["success"]; !found {
+			dataMap["success"] = true
+			data = dataMap
+		}
+	} else {
+		data = map[string]interface{}{
+			"data":data,
+			"success": true,
+		}
+	}
+
 	d, err := json.Marshal(data)
 	if err != nil {
 		log.Errorf("Error marshalling data: %s", err.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
-	res.Write(d)
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Write(d)
 }
 
 // writeJSONBytes prepares the headers for pre-encoded JSON and writes the JSON

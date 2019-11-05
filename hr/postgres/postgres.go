@@ -131,6 +131,18 @@ func (pg *PgDb) EmployeeTypes(ctx context.Context, departmentId string, skipCoun
 	return employeeTypes, totalCount, nil
 }
 
+func (pg *PgDb) UpdateEmployeeType(ctx context.Context, employeeType go_micro_srv_hr.EmployeeType) error {
+	employeeTypeModel := models.EmployeeType{
+		ID:   employeeType.Id,
+		Name: employeeType.Name,
+		DepartmentID:employeeType.DepartmentId,
+		CanLogin:employeeType.CanLogin,
+	}
+
+	_, err := employeeTypeModel.Update(ctx, pg.db, boil.Infer())
+	return err
+}
+
 func (pg *PgDb) DeleteEmployeeType(ctx context.Context, id string) error {
 	// TODO delete related employees
 	employeeType := models.EmployeeType{
@@ -142,7 +154,7 @@ func (pg *PgDb) DeleteEmployeeType(ctx context.Context, id string) error {
 }
 
 func (pg *PgDb) EmployeeType(ctx context.Context, id string) (*go_micro_srv_hr.EmployeeType, error) {
-	employeeTypeModel, err := models.EmployeeTypes(models.EmployeeTypeWhere.ID.EQ(id)).One(ctx, pg.db)
+	employeeTypeModel, err := models.EmployeeTypes(qm.Load(models.EmployeeTypeRels.Department), models.EmployeeTypeWhere.ID.EQ(id)).One(ctx, pg.db)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +199,15 @@ func (pg *PgDb) CreateEmployee(ctx context.Context, employee go_micro_srv_hr.Emp
 		return fmt.Errorf("the selected phone number, %s has been taken", employee.GetPhoneNumber())
 	}
 
+	if employee.GetDepartmentId() == "" {
+		employeeType, err := models.EmployeeTypes(models.EmployeeTypeWhere.ID.EQ(employee.GetEmployeeTypeId())).One(ctx, pg.db)
+		if err != nil {
+			log.Trace(err)
+			return fmt.Errorf("employee tpye id must be valid")
+		}
+		employee.DepartmentId = employeeType.DepartmentID
+	}
+
 	employeeModel := models.Employee{
 		ID:             employee.GetId(),
 		EmployeeTypeID: employee.GetEmployeeTypeId(),
@@ -217,7 +238,9 @@ func (pg *PgDb) Employees(ctx context.Context, departmentId string, employeeType
 		return nil, 0, fmt.Errorf("cannot get employee count, %s", err.Error())
 	}
 
-	queries = append(queries, qm.Offset(int(skipCount)), qm.Limit(int(resultCount)))
+	queries = append(queries, qm.Load(models.EmployeeRels.Department), qm.Load(models.EmployeeRels.EmployeeType),
+		qm.Offset(int(skipCount)), qm.Limit(int(resultCount)))
+
 	employeeSlice, err := models.Employees(queries...).All(ctx, pg.db)
 	if err != nil {
 		return nil, 0, err

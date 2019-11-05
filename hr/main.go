@@ -68,7 +68,7 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	if err = hr.RegisterHrHandler(service.Server(), handler.NewHr(db, acl.NewAclService("go.micro.acl", nil))); err != nil {
+	if err = hr.RegisterHrHandler(service.Server(), handler.NewHr(db, acl.NewAclService("go.micro.srv.acl", nil))); err != nil {
 		log.Fatal(err)
 	}
 

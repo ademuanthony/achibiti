@@ -2,9 +2,11 @@ package web
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/ademuanthony/achibiti/acl/handler"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -51,15 +53,73 @@ func (s *Server) requireLogin(next http.Handler) http.Handler {
 	})
 }
 
-func currentUserCtx(r *http.Request) (*userData, error) {
+func (s *Server) jwtAuthentication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		notAuth := []string{"/api/user/login"} //List of endpoints that doesn't require auth
+		requestPath := r.URL.Path //current request path
+
+		//check if request does not need authentication, serve the request if it doesn't need it
+		for _, value := range notAuth {
+
+			if value == requestPath {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
+		tokenHeader := r.Header.Get("Authorization") //Grab the token from the header
+
+		if tokenHeader == "" { //Token is missing, returns with error code 403 Unauthorized
+			s.renderErrorJSON("Missing auth token", w)
+			return
+		}
+
+		splitted := strings.Split(tokenHeader, " ") //The token normally comes in format `Bearer {token-body}`, we check if the retrieved token matched this requirement
+		if len(splitted) != 2 {
+			s.renderErrorJSON("Invalid/Malformed auth token", w)
+			return
+		}
+
+		tokenPart := splitted[1] //Grab the token part, what we are truly interested in
+		claims := &handler.Claims{}
+
+		token, err := jwt.ParseWithClaims(tokenPart, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte("234dfsgk593jffjdh9ekjdsfjk43089432kjkfjfadj4390fdjk3490dgskljgdsk2390gshgfddfhjk2398-glsjl"), nil
+		})
+
+		if err != nil { //Malformed token, returns with http code 403 as usual
+			s.renderErrorJSON("Malformed authentication token", w)
+			return
+		}
+
+		if !token.Valid { //Token is invalid, maybe not signed on this server
+			s.renderErrorJSON("Token is not valid.", w)
+			return
+		}
+
+		userData := userData{
+			Username:    claims.Username,
+			Role:        claims.Role,
+			Token:       tokenPart,
+		}
+		//Everything went well, proceed with the request and set the caller to the user retrieved from the parsed token
+		ctx := context.WithValue(r.Context(), ctxCurrentUser, userData)
+		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r) //proceed in the middleware chain!
+	})
+}
+
+func currentUserCtx(r *http.Request) *userData {
 	userData, ok := r.Context().Value(ctxCurrentUser).(userData)
 	if !ok {
 		log.Trace("current user not set")
-		return nil, errors.New("current user not set")
+		return nil
 	}
-	return &userData, nil
+	return &userData
 }
 
+// used this for refresh token and stop frontend from making request for fresh
 func (s *Server) refreshLoginSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie(sessionCookieName)

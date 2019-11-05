@@ -5,6 +5,7 @@ package go.micro.srv.acl;
 service Acl {
 	rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {}
 	rpc Login (LoginRequest) returns (LoginResponse) {}
+	rpc RefreshToken (RefreshTokenRequest) returns (LoginResponse) {}
 	rpc UpdateUser (UpdateUserRequest) returns (EmptyMessage) {}
 	rpc DeleteUser(DeleteUserRequest) returns (EmptyMessage) {}
 	rpc DisableUser (DisableUserRequest) returns (EmptyMessage) {}
@@ -46,6 +47,11 @@ message LoginResponse {
 	string name = 4;
 	string role = 5;
 	string token = 6;
+}
+
+// Refresh token
+message RefreshTokenRequest {
+	string username = 1;
 }
 
 // Update

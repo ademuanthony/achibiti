@@ -27,6 +27,7 @@ type DataSource interface {
 	DeleteDepartment(ctx context.Context, id string) error
 	CreateEmployeeType(ctx context.Context, employeeType go_micro_srv_hr.EmployeeType) error
 	EmployeeTypes(ctx context.Context, departmentId string, skipCount int32, maxResultCount int32) ([]*go_micro_srv_hr.EmployeeType, int64, error)
+	UpdateEmployeeType(ctx context.Context, employeeType go_micro_srv_hr.EmployeeType) error
 	DeleteEmployeeType(ctx context.Context, id string) error
 	EmployeeType(ctx context.Context, id string) (*go_micro_srv_hr.EmployeeType, error)
 	CreateEmployee(ctx context.Context, employee go_micro_srv_hr.Employee) error
@@ -121,7 +122,7 @@ func (h hr) UpdateEmployeeType(ctx context.Context, req *go_micro_srv_hr.UpdateE
 		CanLogin:             req.GetCanLogin(),
 	}
 
-	return h.dataSource.CreateEmployeeType(ctx, employeeType)
+	return h.dataSource.UpdateEmployeeType(ctx, employeeType)
 }
 
 func (h hr) DeleteEmployeeType(ctx context.Context, req *go_micro_srv_hr.DeleteEmployeeTypeRequest, _ *go_micro_srv_hr.EmptyMessage) error {
@@ -129,7 +130,7 @@ func (h hr) DeleteEmployeeType(ctx context.Context, req *go_micro_srv_hr.DeleteE
 }
 
 func (h hr) CreateEmployee(ctx context.Context, req *go_micro_srv_hr.CreateEmployeeRequest, resp *go_micro_srv_hr.CreateEmployeeResponse) error {
-	employeeType, err := h.dataSource.EmployeeType(ctx, req.EmployeeTypeId)
+	employeeType, err := h.dataSource.EmployeeType(ctx, req.GetEmployeeTypeId())
 	if err != nil {
 		return fmt.Errorf("error in retreiving employee type, %s", err.Error())
 	}
